@@ -69,6 +69,7 @@ public class ClientTickHandler implements ITickHandler {
 			mc.thePlayer.inventory.armorInventory[index] = itemStack;
 			mc.thePlayer.inventory.setInventorySlotContents(i, null);
 		}
+		mc.thePlayer.inventoryContainer.detectAndSendChanges();
 	}
 
 }
