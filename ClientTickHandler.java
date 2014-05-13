@@ -1,46 +1,27 @@
 package autoarmor;
 
-import java.util.EnumSet;
-
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
 
-public class ClientTickHandler implements ITickHandler {
+public class ClientTickHandler {
 
-	@Override
-	public void tickStart(EnumSet<TickType> type, Object... tickData) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	@Override
-	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
-		if (type.equals(EnumSet.of(TickType.CLIENT))) {
-			GuiScreen guiscreen = Minecraft.getMinecraft().currentScreen;
-			if (guiscreen == null) {
-				onTickInGame();
-			}
-		}
-	}
-
-	@Override
-	public EnumSet<TickType> ticks() {
-		return EnumSet.of(TickType.CLIENT);
-	}
-
-	@Override
-	public String getLabel() {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
-	}
+    @SubscribeEvent
+    public void tickEnd(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && !FMLClientHandler.instance().isGUIOpen(GuiChat.class)) {
+            onTickInGame();
+        }
+    }
 
 	private void onTickInGame() {
 		Minecraft mc = Minecraft.getMinecraft();
+        if(mc == null) return;
+        if(mc.thePlayer == null) return;
 		int start = 0;
 		int size = 0;
 		switch(AutoArmor.getMode()) {
@@ -59,7 +40,7 @@ public class ClientTickHandler implements ITickHandler {
 			ItemStack itemStack = mc.thePlayer.inventory.getStackInSlot(i);
 			if(itemStack == null) continue;
 
-			Item item = Item.itemsList[itemStack.itemID];
+			Item item = itemStack.getItem();
 			if(item == null) continue;
 			if(item instanceof ItemArmor == false) continue;
 
